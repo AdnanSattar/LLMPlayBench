@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: LLMPlayBench Documentation
+    url: https://github.com/AdnanSattar/LLMPlayBench/blob/main/README.md
+    about: Check out the documentation before opening an issue.
+  - name: Contributing Guidelines
+    url: https://github.com/AdnanSattar/LLMPlayBench/blob/main/CONTRIBUTING.md
+    about: Please read through our contributing guidelines before submitting changes.

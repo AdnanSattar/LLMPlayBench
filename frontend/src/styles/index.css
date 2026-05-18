@@ -1,0 +1,77 @@
+/**
+ * Main stylesheet for LLMPlayBench
+ * 
+ * Author: Adnan Sattar
+ * Email: adnansattar09@gmail.com
+ * GitHub: https://github.com/AdnanSattar
+ * LinkedIn: https://www.linkedin.com/in/adnansattar09/
+ */
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Custom styles */
+body {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  @apply bg-gray-50 text-gray-900 dark:bg-neutral-900 dark:text-neutral-100;
+  /* Improve default contrast */
+  --lpb-text-color: #111827;
+  --lpb-text-color-dark: #e8eaed;
+}
+
+code, pre, textarea.code-like {
+  font-family: 'JetBrains Mono', 'Menlo', monospace;
+}
+
+.btn {
+  @apply px-4 py-2 rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2;
+}
+
+.btn-primary {
+  @apply bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500;
+}
+
+.btn-secondary {
+  @apply bg-gray-200 hover:bg-gray-300 text-gray-900 focus:ring-gray-500;
+}
+
+.input {
+  @apply rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500;
+}
+
+.card {
+  @apply bg-white dark:bg-neutral-800 rounded-lg border border-gray-200 dark:border-neutral-700 shadow-sm p-6;
+}
+
+.playground-editor {
+  @apply border border-gray-300 rounded-md bg-white p-4 font-mono text-gray-800 w-full h-64 resize-y;
+}
+
+.playground-output {
+  @apply border border-gray-300 rounded-md bg-gray-50 p-4 font-mono text-gray-800 w-full h-64 overflow-y-auto;
+}
+
+.dashboard-card {
+  @apply bg-white dark:bg-neutral-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-neutral-700;
+}
+
+.metrics-chart-container {
+  @apply h-64 w-full;
+}
+
+.table-container {
+  @apply overflow-x-auto;
+}
+
+.metrics-table {
+  @apply min-w-full divide-y divide-gray-200;
+}
+
+.metrics-table th {
+  @apply px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-300 uppercase tracking-wider;
+}
+
+.metrics-table td {
+  @apply px-4 py-3 text-sm text-gray-500 dark:text-neutral-300;
+}

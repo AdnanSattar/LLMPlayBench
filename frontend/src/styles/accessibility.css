@@ -1,0 +1,93 @@
+/**
+ * Accessibility styles
+ *
+ * Author: Adnan Sattar
+ * Email: adnansattar09@gmail.com
+ * GitHub: https://github.com/AdnanSattar
+ * LinkedIn: https://www.linkedin.com/in/adnansattar09/
+ */
+
+/* Enhanced focus styles for keyboard navigation */
+:focus-visible {
+  outline: 3px solid #1E3A8A !important;
+  outline-offset: 2px !important;
+  border-radius: 4px !important;
+  box-shadow: 0 0 0 2px rgba(30, 58, 138, 0.2) !important;
+  transition: outline-offset 0.1s ease !important;
+  z-index: 1;
+}
+
+/* Dark mode focus styles */
+[data-mui-color-scheme="dark"] :focus-visible {
+  outline: 3px solid #06B6D4 !important;
+  box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.3) !important;
+}
+
+/* Skip to content link - hidden until focused */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #1E3A8A;
+  color: white;
+  padding: 8px;
+  z-index: 9999;
+  transition: top 0.2s;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Ensure interactive elements have proper hover states */
+button:hover,
+a:hover,
+[role="button"]:hover {
+  cursor: pointer;
+}
+
+/* Ensure form elements have consistent focus states */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 3px solid #1E3A8A !important;
+  outline-offset: 1px !important;
+}
+
+/* Dark mode form focus */
+[data-mui-color-scheme="dark"] input:focus,
+[data-mui-color-scheme="dark"] textarea:focus,
+[data-mui-color-scheme="dark"] select:focus {
+  outline: 3px solid #06B6D4 !important;
+}
+
+/* Make sure disabled elements look disabled */
+button:disabled,
+input:disabled,
+textarea:disabled,
+select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Class for reduced motion when set manually */
+.reduced-motion *,
+.reduced-motion *::before,
+.reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}

@@ -1,0 +1,57 @@
+.git
+.gitignore
+**/.git
+**/.gitignore
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Env and secrets
+.env
+.env.*
+!**/.env.example
+
+# Logs and temp
+*.log
+logs/
+backend/logs/
+*.tmp
+*.temp
+
+# Python caches and virtualenvs
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.mypy_cache/
+**/.cache/
+.venv/
+venv/
+
+# Package managers / build outputs
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+backend/dist/
+backend/build/
+
+# Large models and datasets
+backend/models/
+backend/models.zip
+
+# VCS/CI and project-only files not needed at build time
+.github/
+.gitlab/
+docs/
+branding/
+
+# Root files not needed in build context
+docker-compose.yml
+AGENT.md
+PRD.md
+TODO.md
+README.md
+CONTRIBUTING.md

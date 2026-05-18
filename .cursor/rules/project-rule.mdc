@@ -1,0 +1,16 @@
+---
+description: "Always include key project context files (AGENT.md, TODO.md, PRD.md) in every chat session and always run & test this codebase in docker container"
+globs:
+  - "AGENT.md"
+  - "TODO.md"
+  - "PRD.md"
+alwaysApply: true
+---
+
+# Project Context Rule
+
+This rule ensures the following files are **always attached** in Cursor chats for this repo:
+
+- `AGENT.md` → Development workflow and AI agent rules for Cursor  
+- `TODO.md` → Tracks outstanding development tasks and progress  
+- `PRD.md` → Defines product requirements for clarity across sessions

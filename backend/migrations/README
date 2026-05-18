@@ -1,0 +1,34 @@
+# Alembic Migrations
+
+This directory contains database migrations for LLMPlayBench.
+
+## Usage
+
+To generate a new migration:
+
+```bash
+cd backend
+alembic revision --autogenerate -m "Description of migration"
+```
+
+To apply migrations:
+
+```bash
+cd backend
+alembic upgrade head
+```
+
+To roll back migrations:
+
+```bash
+cd backend
+alembic downgrade -1  # Roll back one migration
+alembic downgrade base  # Roll back all migrations
+```
+
+## Author
+
+Adnan Sattar
+- Email: adnansattar09@gmail.com
+- GitHub: https://github.com/AdnanSattar
+- LinkedIn: https://www.linkedin.com/in/adnansattar09/

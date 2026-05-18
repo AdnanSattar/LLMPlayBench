@@ -1,0 +1,115 @@
+name: Documentation
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "docs/**"
+      - "README.md"
+      - "CONTRIBUTING.md"
+      - "backend/README.md"
+      - "frontend/README.md"
+  workflow_dispatch:
+
+jobs:
+  build-docs:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install mkdocs
+        run: |
+          python -m pip install --upgrade pip
+          pip install mkdocs mkdocs-material pymdown-extensions
+
+      - name: Setup Documentation Structure
+        run: |
+          mkdir -p docs-site
+          cp README.md docs-site/index.md
+          cp CONTRIBUTING.md docs-site/contributing.md
+          cp docs/*.md docs-site/
+          cp backend/README.md docs-site/backend.md
+          cp frontend/README.md docs-site/frontend.md
+
+          cat > mkdocs.yml << EOF
+          site_name: LLMPlayBench
+          site_description: Self-Hosted LLM Inference API + Benchmark Dashboard
+          site_author: Adnan Sattar
+          repo_url: https://github.com/AdnanSattar/LLMPlayBench
+
+          theme:
+            name: material
+            palette:
+              primary: indigo
+              accent: cyan
+            font:
+              text: Inter
+              code: JetBrains Mono
+            features:
+              - navigation.instant
+              - navigation.tracking
+              - navigation.sections
+              - navigation.expand
+
+          markdown_extensions:
+            - pymdownx.highlight
+            - pymdownx.superfences
+            - pymdownx.inlinehilite
+            - pymdownx.tabbed
+            - pymdownx.critic
+
+          nav:
+            - Home: index.md
+            - API Reference: API.md
+            - Production Guide: PRODUCTION.md
+            - Backend: backend.md
+            - Frontend: frontend.md
+            - Contributing: contributing.md
+          EOF
+
+      - name: Build documentation
+        run: mkdocs build
+
+      - name: Upload documentation artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: site
+          path: site/
+
+  deploy-docs:
+    name: Deploy Documentation
+    needs: build-docs
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Download documentation artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: site
+          path: site
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v3
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2

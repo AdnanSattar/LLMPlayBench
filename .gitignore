@@ -1,0 +1,104 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+*.iml
+
+# Root general
+.env
+.env.*
+!.env.example
+*.log
+logs/
+*.tmp
+*.temp
+*.lock
+
+# Python (backend)
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.pyre/
+.pytype/
+.coverage
+coverage.xml
+htmlcov/
+.tox/
+.venv/
+venv/
+.envrc
+
+# UV / Poetry / Pip
+.uv/
+uv.lock.bak
+pip-wheel-metadata/
+.site-packages/
+
+# Backend app specific
+backend/.env
+backend/logs/
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/models/
+backend/models.zip
+backend/.ruff_cache/
+backend/.coverage*
+backend/dist/
+backend/build/
+
+# Alembic migrations cache (keep migration scripts)
+backend/migrations/.cache/
+
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+frontend/.env
+frontend/.env.*
+frontend/.vite/
+frontend/dist/
+frontend/build/
+frontend/.turbo/
+frontend/.next/
+frontend/coverage/
+
+# NPM/Yarn/PNPM files
+package-lock.json
+pnpm-lock.yaml
+# keep Yarn lock if you use Yarn; comment out to ignore
+# yarn.lock
+
+# Docker artifacts
+**/.docker/
+**/.dockerignore.local
+
+# Images / datasets (prevent accidental large commits)
+*.bin
+*.pt
+*.pth
+*.onnx
+*.ckpt
+*.safetensors
+*.model
+*.tflite
+*.h5
+*.pb
+*.npz
+*.npy
+
+# Misc
+coverage/
+.tmp/
+.cache/
+.parcel-cache/
+.sass-cache/
+.browserslistrc.cjs
+
+# Local runtime files
+*.sqlite
+*.sqlite3
+*.db

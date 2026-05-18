@@ -1,0 +1,35 @@
+# This file defines code ownership for the LLMPlayBench repository
+
+## These owners will be automatically requested for review when someone opens a pull request
+
+## Default owners for everything
+
+* @AdnanSattar
+
+## Backend code
+
+/backend/ @AdnanSattar
+
+## Frontend code
+
+/frontend/ @AdnanSattar
+
+## Documentation
+
+/docs/ @AdnanSattar
+*.md @AdnanSattar
+
+## GitHub Actions workflows
+
+/.github/ @AdnanSattar
+
+## Docker configuration
+
+Dockerfile*@AdnanSattar
+docker-compose* @AdnanSattar
+
+## Core configuration files
+
+*.yml @AdnanSattar
+*.yaml @AdnanSattar
+*.json @AdnanSattar

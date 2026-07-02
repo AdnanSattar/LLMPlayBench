@@ -25,36 +25,33 @@ import {
 function MetricsChart({ data = [], className = "" }) {
   const [chartType, setChartType] = useState("latency"); // 'latency', 'tokens', 'tokensPerSec'
 
-  if (!data || data.length === 0) {
-    return (
-      <div
-        className={`dashboard-card flex items-center justify-center ${className}`}
-      >
-        <p className="text-gray-500">No metrics data available</p>
-      </div>
-    );
-  }
+  const chartData = useMemo(() => {
+    if (!Array.isArray(data) || data.length === 0) return [];
 
-  const formatTimestamp = (timestamp) => {
-    const date = new Date(timestamp * 1000);
-    return `${date.getHours()}:${date
-      .getMinutes()
-      .toString()
-      .padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
-  };
+    const formatTimestamp = (timestamp) => {
+      const date = new Date(timestamp * 1000);
+      return `${date.getHours()}:${date
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
+    };
 
-  // Process data for charts
-  const chartData = data
-    .map((item) => ({
-      timestamp: formatTimestamp(item.timestamp),
-      latency: parseFloat(item.latency_s.toFixed(3)),
-      tokens: Math.max(0, item.tokens),
-      tokensPerSec: Math.max(0, parseFloat(item.tokens_per_sec.toFixed(2))),
-      model: item.model.split("/").pop(), // Show only model name, not full path
-    }))
-    .reverse(); // Show most recent data on the right
+    return data
+      .map((item) => ({
+        timestamp: formatTimestamp(item.timestamp ?? 0),
+        latency: parseFloat(Number(item.latency_s ?? 0).toFixed(3)),
+        tokens: Math.max(0, Number(item.tokens ?? 0)),
+        tokensPerSec: Math.max(
+          0,
+          parseFloat(Number(item.tokens_per_sec ?? 0).toFixed(2)),
+        ),
+        model: String(item.model || "unknown")
+          .split("/")
+          .pop(),
+      }))
+      .reverse();
+  }, [data]);
 
-  // Chart config based on selected metric
   const chartConfig = {
     latency: {
       title: "Latency (seconds)",
@@ -102,6 +99,16 @@ function MetricsChart({ data = [], className = "" }) {
     const vals = chartData.map((d) => Math.max(0, Number(d[key]) || 0));
     return computeStats(vals);
   }, [chartData, selectedConfig]);
+
+  if (!chartData.length) {
+    return (
+      <div
+        className={`dashboard-card flex items-center justify-center ${className}`}
+      >
+        <p className="text-gray-500">No metrics data available</p>
+      </div>
+    );
+  }
 
   return (
     <div className={`dashboard-card ${className}`}>

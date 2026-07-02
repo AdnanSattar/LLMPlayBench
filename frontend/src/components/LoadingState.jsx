@@ -94,6 +94,7 @@ const LoadingState = ({
       case "spinner":
         return (
           <Box
+            className="motion-safe"
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -103,7 +104,7 @@ const LoadingState = ({
               height: height !== "auto" ? height : 200,
             }}
           >
-            <CircularProgress size={40} thickness={4} />
+            <CircularProgress size={40} thickness={4} className="motion-safe" />
             {showText && (
               <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
                 {text}
@@ -116,6 +117,7 @@ const LoadingState = ({
       default:
         return (
           <Box
+            className="motion-safe"
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -125,7 +127,7 @@ const LoadingState = ({
               height: height !== "auto" ? height : 100,
             }}
           >
-            <CircularProgress size={24} thickness={4} />
+            <CircularProgress size={24} thickness={4} className="motion-safe" />
             {showText && (
               <Typography
                 variant="caption"

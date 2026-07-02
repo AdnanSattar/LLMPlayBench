@@ -11,32 +11,44 @@ import axios from "axios";
 import logger from "./logger";
 
 // Allow runtime overrides via localStorage (set from Settings dialog)
-const storedUrl =
-  typeof window !== "undefined" ? localStorage.getItem("lpb.apiBaseUrl") : null;
-const storedKey =
-  typeof window !== "undefined" ? localStorage.getItem("lpb.apiKey") : null;
-const storedWriteKey =
-  typeof window !== "undefined"
-    ? localStorage.getItem("lpb.apiKeyWrite")
-    : null;
-function resolveApiBaseUrl() {
+function readStored(key) {
+  if (typeof window === "undefined") return null;
+  const value = localStorage.getItem(key);
+  return value && value.trim() ? value.trim() : null;
+}
+
+export function resolveApiBaseUrl() {
+  if (typeof window === "undefined") return "http://localhost:8000";
+
+  const storedUrl = readStored("lpb.apiBaseUrl");
   if (storedUrl) return storedUrl;
+
   const envUrl = import.meta.env.VITE_API_BASE_URL;
-  if (envUrl) return envUrl;
+  if (envUrl && String(envUrl).trim()) return String(envUrl).trim();
+
   // Prod Docker: nginx proxies /v1 and /health to the backend on the same host.
-  if (import.meta.env.PROD && typeof window !== "undefined") {
-    return window.location.origin;
-  }
+  if (import.meta.env.PROD) return window.location.origin;
+
   return "http://localhost:8000";
 }
 
+export function resolveApiKey() {
+  return (
+    readStored("lpb.apiKey") || import.meta.env.VITE_API_KEY || "read-dev-key"
+  );
+}
+
+export function resolveApiKeyWrite() {
+  const apiKey = resolveApiKey();
+  return (
+    readStored("lpb.apiKeyWrite") ||
+    import.meta.env.VITE_API_KEY_WRITE ||
+    import.meta.env.VITE_ADMIN_API_KEY ||
+    (apiKey === "read-dev-key" ? "admin-dev-key" : apiKey)
+  );
+}
+
 const API_URL = resolveApiBaseUrl();
-const API_KEY = storedKey || import.meta.env.VITE_API_KEY || "read-dev-key";
-const API_KEY_WRITE =
-  storedWriteKey ||
-  import.meta.env.VITE_API_KEY_WRITE ||
-  import.meta.env.VITE_ADMIN_API_KEY ||
-  (API_KEY === "read-dev-key" ? "admin-dev-key" : API_KEY);
 
 export const apiClient = axios.create({
   baseURL: API_URL,
@@ -47,7 +59,8 @@ export const apiClient = axios.create({
 
 // Ensure API key header is always attached (guards against missing env at runtime)
 apiClient.interceptors.request.use((config) => {
-  const key = API_KEY || import.meta.env.VITE_API_KEY || "read-dev-key";
+  config.baseURL = resolveApiBaseUrl();
+  const key = resolveApiKey();
   if (!config.headers["X-API-Key"]) {
     config.headers["X-API-Key"] = key;
   }
@@ -58,8 +71,14 @@ export const fetchModels = async () => {
   try {
     logger.debug("Fetching available models");
     const response = await apiClient.get("/v1/models");
-    logger.info(`Successfully fetched ${response.data?.length || 0} models`);
-    return response.data;
+    const data = response.data;
+    if (!Array.isArray(data)) {
+      throw new Error(
+        "Invalid models response (expected JSON array). Rebuild the frontend with the prod profile so nginx can proxy /v1 to the backend.",
+      );
+    }
+    logger.info(`Successfully fetched ${data.length} models`);
+    return data;
   } catch (error) {
     logger.error("Error fetching models", {
       error: error.message,
@@ -76,7 +95,7 @@ export const generateResponse = async (
   temperature = 0.7,
   quantization = "int8",
   systemPrompt = null,
-  { benchmark = false, topP = 0.9, topK = 50 } = {}
+  { benchmark = false, topP = 0.9, topK = 50 } = {},
 ) => {
   try {
     logger.info("Generating response", {
@@ -99,7 +118,7 @@ export const generateResponse = async (
         top_p: topP,
         top_k: topK,
       },
-      { headers: { "X-API-Key": API_KEY_WRITE } }
+      { headers: { "X-API-Key": resolveApiKeyWrite() } },
     );
     logger.info("Response generated successfully", {
       model: modelId,
@@ -165,7 +184,7 @@ export const runBenchmark = async (modelId, quantization = "int8") => {
         model: modelId,
         quantization,
       },
-      headers: { "X-API-Key": API_KEY_WRITE },
+      headers: { "X-API-Key": resolveApiKeyWrite() },
     });
     logger.info("Benchmark completed", {
       model: modelId,
@@ -191,8 +210,8 @@ export const reloadModel = async (modelId, quantization = "int8") => {
       {},
       {
         params: { model_name: modelId, quantization },
-        headers: { "X-API-Key": API_KEY_WRITE },
-      }
+        headers: { "X-API-Key": resolveApiKeyWrite() },
+      },
     );
     logger.info("Model reloaded", {
       model: modelId,
@@ -212,7 +231,7 @@ export const reloadModel = async (modelId, quantization = "int8") => {
 
 export const isAdmin = () => {
   try {
-    const key = API_KEY_WRITE || "";
+    const key = resolveApiKeyWrite() || "";
     // Synchronous heuristic (kept as fallback); actual check uses checkIsAdmin() below
     return (
       key === "admin-dev-key" ||
@@ -226,7 +245,7 @@ export const isAdmin = () => {
 export const checkIsAdmin = async () => {
   try {
     const resp = await apiClient.get("/v1/auth/admin", {
-      headers: { "X-API-Key": API_KEY_WRITE },
+      headers: { "X-API-Key": resolveApiKeyWrite() },
     });
     return resp.status === 200;
   } catch {

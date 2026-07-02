@@ -17,6 +17,8 @@ import {
   Button,
   Skeleton,
   Stack,
+  CircularProgress,
+  LinearProgress,
 } from "@mui/material";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
@@ -31,6 +33,7 @@ import {
   apiClient,
   isAdmin,
   checkIsAdmin,
+  resolveApiKeyWrite,
 } from "../lib/api";
 import logger from "../lib/logger";
 
@@ -53,7 +56,7 @@ export default function Dashboard() {
   });
   const [lastRefreshTime, setLastRefreshTime] = useState(Date.now());
   const [docsNudgeShown, setDocsNudgeShown] = useState(
-    localStorage.getItem("lpb.docsNudgeShown") === "true"
+    localStorage.getItem("lpb.docsNudgeShown") === "true",
   );
   const availableModels = [
     "google/flan-t5-small",
@@ -109,10 +112,19 @@ export default function Dashboard() {
 
       setError(null);
     } catch (err) {
-      setError("Failed to load metrics data");
+      const isNetwork =
+        !err.response ||
+        err.code === "ERR_NETWORK" ||
+        err.message?.includes("Network Error");
+      const message = isNetwork
+        ? "Cannot reach the API. Open Settings and set API Base URL and API Key (from backend .env), then Save & Reload."
+        : err.response?.status === 401 || err.response?.status === 403
+          ? "API key rejected. Open Settings and set API Key to match READ_API_KEY in backend/.env."
+          : "Failed to load metrics. Check Settings or try again.";
+      setError(message);
       setToast({
         open: true,
-        message: "Failed to load metrics. Backend may be unreachable.",
+        message,
         severity: "error",
       });
       logger.error("Error loading metrics", { error: err.message });
@@ -203,6 +215,7 @@ export default function Dashboard() {
               <select
                 onChange={(e) => handleAdminLoad(e.target.value)}
                 defaultValue=""
+                disabled={Boolean(loadingModelId)}
                 style={{
                   background:
                     theme.palette.mode === "dark"
@@ -249,7 +262,7 @@ export default function Dashboard() {
                   try {
                     await apiClient.post("/v1/admin/clear_caches", null, {
                       headers: {
-                        "X-API-Key": localStorage.getItem("lpb.apiKey") || "",
+                        "X-API-Key": resolveApiKeyWrite(),
                       },
                     });
                     setToast({
@@ -274,6 +287,35 @@ export default function Dashboard() {
             </Button>
           </Grid>
         </Grid>
+
+        {error && !loading && (
+          <Alert severity="error" onClose={() => setError(null)}>
+            {error}
+          </Alert>
+        )}
+
+        {loadingModelId && (
+          <>
+            <LinearProgress className="motion-safe" />
+            <Alert
+              severity="info"
+              className="motion-safe"
+              icon={
+                <CircularProgress
+                  size={20}
+                  color="inherit"
+                  className="motion-safe"
+                />
+              }
+              sx={{ alignItems: "center" }}
+            >
+              <Typography variant="body2" component="span">
+                Downloading and loading <strong>{loadingModelId}</strong> into
+                memory. This can take 10–30 seconds — the app is still running.
+              </Typography>
+            </Alert>
+          </>
+        )}
 
         <Card>
           <CardContent>
@@ -364,7 +406,7 @@ export default function Dashboard() {
                 <CardContent>
                   <Typography variant="caption">Avg. Latency</Typography>
                   <Typography variant="h5">
-                    {summary.overall_avg_latency.toFixed(3)}s
+                    {(summary.overall_avg_latency ?? 0).toFixed(3)}s
                   </Typography>
                 </CardContent>
               </Card>
@@ -379,11 +421,11 @@ export default function Dashboard() {
                         summary.overall_avg_tokens > 0
                         ? summary.overall_avg_tokens
                         : metrics.length
-                        ? metrics.reduce(
-                            (s, m) => s + Math.max(0, m.tokens),
-                            0
-                          ) / metrics.length
-                        : 0
+                          ? metrics.reduce(
+                              (s, m) => s + Math.max(0, m.tokens),
+                              0,
+                            ) / metrics.length
+                          : 0,
                     )}
                   </Typography>
                 </CardContent>
@@ -397,11 +439,11 @@ export default function Dashboard() {
                     {(summary.overall_avg_tps && summary.overall_avg_tps > 0
                       ? summary.overall_avg_tps
                       : metrics.length
-                      ? metrics.reduce(
-                          (s, m) => s + Math.max(0, m.tokens_per_sec || 0),
-                          0
-                        ) / metrics.length
-                      : 0
+                        ? metrics.reduce(
+                            (s, m) => s + Math.max(0, m.tokens_per_sec || 0),
+                            0,
+                          ) / metrics.length
+                        : 0
                     ).toFixed(2)}
                   </Typography>
                 </CardContent>

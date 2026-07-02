@@ -89,15 +89,24 @@ docker compose up --build
 | pgAdmin | <http://localhost:8080> (`admin@admin.com` / `admin`) |
 | Redis Commander | <http://localhost:8081> (`admin` / `admin`) |
 
-**Remote VM / cloud (prod profile):** Open port **3000** in your firewall. The frontend nginx container proxies `/v1/*` and `/health` to the backend, so you usually do **not** need to expose port 8000 for the dashboard. In the UI **Settings**:
+**Remote VM / cloud (prod profile):** Open port **3000** in your firewall. Rebuild the frontend so nginx proxies API calls (required for empty API Base URL):
 
-1. **Clear API Base URL** (leave empty) — the app will use the same host as the page.
-2. Set **API Key** to the `READ_API_KEY` **value** from `backend/.env` (e.g. `read_api_key`), not the label `ADMIN_API_KEY`.
-3. Use `ADMIN_API_KEY`'s value only for admin actions (reload model, benchmarks).
+```bash
+grep -E '^(READ_API_KEY|ADMIN_API_KEY|HF_TOKEN)=' backend/.env > .env
+docker compose --profile prod build --no-cache frontend
+docker compose --profile prod up -d
+```
 
-Copy `backend/.env` keys into a root `.env` (see `.env.example`) before `docker compose --profile prod up --build` so the frontend image is built with matching keys. If models still fail after changing settings, clear stale overrides: open DevTools → Application → Local Storage → delete `lpb.apiBaseUrl` and `lpb.apiKey`, then reload.
+In the UI **Settings**:
 
-If you call the API **directly** on `:8000` instead of through the UI, add your frontend origin (e.g. `http://100.x.x.x:3000`) to `BACKEND_CORS_ORIGINS` in `backend/.env` and open port 8000.
+1. **Clear API Base URL** (leave empty) — requests go to the same host on port 3000 via nginx.
+2. Set **API Key** to the `READ_API_KEY` **value** from `backend/.env` (e.g. `read_api_key`).
+
+**Alternative:** set API Base URL to `http://YOUR_SERVER_IP:8000`, open port 8000, add your frontend origin to `BACKEND_CORS_ORIGINS`, and restart the backend.
+
+Verify the proxy: `curl http://YOUR_SERVER_IP:3000/v1/models` should return JSON, not HTML.
+
+If models still fail, clear stale overrides in DevTools → Application → Local Storage → delete `lpb.apiBaseUrl` and `lpb.apiKey`, then reload.
 
 ### 4. Authentication
 

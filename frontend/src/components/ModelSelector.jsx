@@ -35,7 +35,7 @@ function ModelSelector({
       try {
         setIsLoading(true);
         const modelData = await fetchModels();
-        setModels(modelData);
+        setModels(Array.isArray(modelData) ? modelData : []);
         setError(null);
       } catch (err) {
         setError("Failed to load models");

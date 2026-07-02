@@ -72,9 +72,9 @@ select:disabled {
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *:not(.motion-safe):not(.motion-safe *),
+  *:not(.motion-safe):not(.motion-safe *)::before,
+  *:not(.motion-safe):not(.motion-safe *)::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -83,11 +83,30 @@ select:disabled {
 }
 
 /* Class for reduced motion when set manually */
-.reduced-motion *,
-.reduced-motion *::before,
-.reduced-motion *::after {
+.reduced-motion *:not(.motion-safe):not(.motion-safe *),
+.reduced-motion *:not(.motion-safe):not(.motion-safe *)::before,
+.reduced-motion *:not(.motion-safe):not(.motion-safe *)::after {
   animation-duration: 0.01ms !important;
   animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;
   scroll-behavior: auto !important;
+}
+
+/* Loading indicators stay animated — essential operational feedback */
+.motion-safe .MuiCircularProgress-svg {
+  animation: circular-rotate 1.4s linear infinite !important;
+}
+
+.motion-safe .MuiCircularProgress-circle {
+  animation: circular-dash 1.4s ease-in-out infinite !important;
+}
+
+.motion-safe .MuiLinearProgress-bar1Indeterminate {
+  animation: MuiLinearProgress-keyframes-indeterminate1 2.1s
+    cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite !important;
+}
+
+.motion-safe .MuiLinearProgress-bar2Indeterminate {
+  animation: MuiLinearProgress-keyframes-indeterminate2 2.1s
+    cubic-bezier(0.165, 0.84, 0.44, 1) 1.15s infinite !important;
 }

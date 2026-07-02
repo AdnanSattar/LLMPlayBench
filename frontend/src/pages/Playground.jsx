@@ -23,7 +23,9 @@ import {
   Box,
   Switch,
   Chip,
+  CircularProgress,
 } from "@mui/material";
+import LoadingState from "../components/LoadingState";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 
@@ -32,7 +34,7 @@ export default function Playground() {
   const [quantization, setQuantization] = useState("int8");
   const [prompt, setPrompt] = useState("");
   const [systemPrompt, setSystemPrompt] = useState(
-    "You are a helpful assistant."
+    "You are a helpful assistant.",
   );
   const [output, setOutput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -90,7 +92,7 @@ export default function Playground() {
         temperature,
         quantization,
         systemPrompt,
-        { benchmark, topP, topK }
+        { benchmark, topP, topK },
       );
       const endTime = Date.now();
       setResponseTime((endTime - startTime) / 1000); // in seconds
@@ -122,7 +124,7 @@ export default function Playground() {
       try {
         localStorage.setItem(
           "lpb.previousResponses",
-          JSON.stringify(updatedResponses)
+          JSON.stringify(updatedResponses),
         );
       } catch (err) {
         console.error("Failed to save response history", err);
@@ -349,8 +351,17 @@ export default function Playground() {
               <Button
                 fullWidth
                 variant="contained"
-                disabled={!prompt.trim() || !model}
+                disabled={!prompt.trim() || !model || loading}
                 onClick={handleSubmit}
+                startIcon={
+                  loading ? (
+                    <CircularProgress
+                      size={18}
+                      color="inherit"
+                      className="motion-safe"
+                    />
+                  ) : null
+                }
               >
                 {loading ? "Generating..." : "Generate Response"}
               </Button>
@@ -457,7 +468,7 @@ export default function Playground() {
                             setPrompt(item.prompt);
                             setSystemPrompt(
                               item.systemPrompt ||
-                                "You are a helpful assistant."
+                                "You are a helpful assistant.",
                             );
                             setTemperature(item.temperature || 0.7);
                             if (item.topP) setTopP(item.topP);
@@ -548,9 +559,17 @@ export default function Playground() {
                 >
                   {error ? (
                     <Typography color="error">{error}</Typography>
+                  ) : loading ? (
+                    <LoadingState
+                      variant="default"
+                      height={120}
+                      text="Generating response..."
+                    />
+                  ) : output ? (
+                    <Typography whiteSpace="pre-wrap">{output}</Typography>
                   ) : (
-                    <Typography whiteSpace="pre-wrap">
-                      {loading ? "Generating response..." : output}
+                    <Typography color="text.secondary" variant="body2">
+                      Response will appear here.
                     </Typography>
                   )}
                 </Box>

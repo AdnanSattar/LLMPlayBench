@@ -218,10 +218,10 @@ function Layout({
             </Alert>
             <TextField
               label="API Base URL"
-              placeholder="Leave empty to use this site (recommended in Docker prod)"
+              placeholder="Leave empty for same-host proxy (prod Docker)"
               value={apiBaseUrl}
               onChange={(e) => setApiBaseUrl(e.target.value)}
-              helperText="Override only when the API runs on a different host. Clear this field and reload if models fail to load."
+              helperText="Empty = use this site's URL (requires prod rebuild with nginx proxy). Or set http://YOUR_IP:8000 for direct API access."
               fullWidth
             />
             <TextField

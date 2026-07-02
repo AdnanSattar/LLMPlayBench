@@ -19,8 +19,18 @@ const storedWriteKey =
   typeof window !== "undefined"
     ? localStorage.getItem("lpb.apiKeyWrite")
     : null;
-const API_URL =
-  storedUrl || import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+function resolveApiBaseUrl() {
+  if (storedUrl) return storedUrl;
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  if (envUrl) return envUrl;
+  // Prod Docker: nginx proxies /v1 and /health to the backend on the same host.
+  if (import.meta.env.PROD && typeof window !== "undefined") {
+    return window.location.origin;
+  }
+  return "http://localhost:8000";
+}
+
+const API_URL = resolveApiBaseUrl();
 const API_KEY = storedKey || import.meta.env.VITE_API_KEY || "read-dev-key";
 const API_KEY_WRITE =
   storedWriteKey ||

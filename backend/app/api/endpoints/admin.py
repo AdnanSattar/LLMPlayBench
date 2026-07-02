@@ -24,14 +24,14 @@ async def reload_model(
         str,
         Query(
             description="Hugging Face model id to load",
-            example="google/flan-t5-small",
+            examples=["google/flan-t5-small"],
         ),
     ],
     quantization: Annotated[
         str,
         Query(
             description="Quantization hint (kept for compatibility; CPU-safe load)",
-            example="int8",
+            examples=["int8"],
         ),
     ] = "int8",
     current_user: User = Depends(get_admin_user),
@@ -75,12 +75,12 @@ async def admin_unload_model(
         str,
         Query(
             description="Hugging Face model id to unload",
-            example="google/flan-t5-small",
+            examples=["google/flan-t5-small"],
         ),
     ],
     quantization: Annotated[
         str,
-        Query(description="Quantization hint", example="int8"),
+        Query(description="Quantization hint", examples=["int8"]),
     ] = "int8",
     current_user: User = Depends(get_admin_user),
 ):

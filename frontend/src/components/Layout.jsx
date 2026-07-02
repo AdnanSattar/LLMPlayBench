@@ -50,12 +50,12 @@ function Layout({
   const [apiBaseUrl, setApiBaseUrl] = useState(
     typeof window !== "undefined"
       ? localStorage.getItem("lpb.apiBaseUrl") || ""
-      : ""
+      : "",
   );
   const [apiKey, setApiKey] = useState(
     typeof window !== "undefined"
       ? localStorage.getItem("lpb.apiKey") || ""
-      : ""
+      : "",
   );
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [health, setHealth] = useState("unknown");
@@ -133,8 +133,8 @@ function Layout({
                   health === "ok"
                     ? "#22c55e"
                     : health === "down"
-                    ? "#ef4444"
-                    : "#f59e0b",
+                      ? "#ef4444"
+                      : "#f59e0b",
               }}
               title={`Health: ${health}`}
             />
@@ -218,10 +218,10 @@ function Layout({
             </Alert>
             <TextField
               label="API Base URL"
-              placeholder="http://localhost:8000"
+              placeholder="Leave empty to use this site (recommended in Docker prod)"
               value={apiBaseUrl}
               onChange={(e) => setApiBaseUrl(e.target.value)}
-              helperText="Backend URL for API calls"
+              helperText="Override only when the API runs on a different host. Clear this field and reload if models fail to load."
               fullWidth
             />
             <TextField
@@ -229,7 +229,7 @@ function Layout({
               placeholder="read-dev-key"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
-              helperText="Sent as X-API-Key header"
+              helperText="Value from READ_API_KEY in backend/.env (not the variable name)"
               fullWidth
             />
             <FormControl size="small">

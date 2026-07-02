@@ -83,11 +83,21 @@ docker compose up --build
 
 | Service | URL |
 |---------|-----|
-| API | http://localhost:8000 |
-| Swagger UI | http://localhost:8000/docs |
-| Dashboard / Playground | http://localhost:3000 |
-| pgAdmin | http://localhost:8080 (`admin@admin.com` / `admin`) |
-| Redis Commander | http://localhost:8081 (`admin` / `admin`) |
+| API | <http://localhost:8000> |
+| Swagger UI | <http://localhost:8000/docs> |
+| Dashboard / Playground | <http://localhost:3000> |
+| pgAdmin | <http://localhost:8080> (`admin@admin.com` / `admin`) |
+| Redis Commander | <http://localhost:8081> (`admin` / `admin`) |
+
+**Remote VM / cloud (prod profile):** Open port **3000** in your firewall. The frontend nginx container proxies `/v1/*` and `/health` to the backend, so you usually do **not** need to expose port 8000 for the dashboard. In the UI **Settings**:
+
+1. **Clear API Base URL** (leave empty) — the app will use the same host as the page.
+2. Set **API Key** to the `READ_API_KEY` **value** from `backend/.env` (e.g. `read_api_key`), not the label `ADMIN_API_KEY`.
+3. Use `ADMIN_API_KEY`'s value only for admin actions (reload model, benchmarks).
+
+Copy `backend/.env` keys into a root `.env` (see `.env.example`) before `docker compose --profile prod up --build` so the frontend image is built with matching keys. If models still fail after changing settings, clear stale overrides: open DevTools → Application → Local Storage → delete `lpb.apiBaseUrl` and `lpb.apiKey`, then reload.
+
+If you call the API **directly** on `:8000` instead of through the UI, add your frontend origin (e.g. `http://100.x.x.x:3000`) to `BACKEND_CORS_ORIGINS` in `backend/.env` and open port 8000.
 
 ### 4. Authentication
 
@@ -139,7 +149,7 @@ Base path: `/v1` (except health).
 | `POST` | `/v1/admin/clear_caches` | admin | Clear caches |
 | `POST` | `/v1/clientlogs` | read | Frontend log ingestion |
 
-Interactive reference: http://localhost:8000/docs
+Interactive reference: <http://localhost:8000/docs>
 
 ---
 
@@ -163,9 +173,9 @@ Interactive reference: http://localhost:8000/docs
           |   frontend (Nginx)| <---------------------------------+
           |   (profile=prod)  |                                   |
           +-------------------+                                   |
-                 |                                               |
-                 | HTTP (API)                                    |
-                 v                                               |
+                 |                                                |
+                 | HTTP (API)                                     |
+                 v                                                |
           +-------------------------------------------------------------+
           |                      FastAPI Backend                         |
           |  /health  /v1/models  /v1/response  /v1/metrics/*  /v1/benchmarks|
@@ -336,7 +346,7 @@ Configure repository secrets (`DOCKERHUB_*`, `SSH_*`, etc.) before enabling depl
 
 **Adnan Sattar**
 
-- Email: adnansattar09@gmail.com
+- Email: <adnansattar09@gmail.com>
 - GitHub: [AdnanSattar](https://github.com/AdnanSattar)
 - LinkedIn: [adnansattar09](https://www.linkedin.com/in/adnansattar09/)
 

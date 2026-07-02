@@ -42,7 +42,7 @@ export default function Playground() {
   const [topP, setTopP] = useState(0.9);
   const [topK, setTopK] = useState(50);
   const [responseTime, setResponseTime] = useState(null);
-  const [benchmark, setBenchmark] = useState(false);
+  const [benchmark, setBenchmark] = useState(true);
   const [health, setHealth] = useState("unknown");
   const [previousResponses, setPreviousResponses] = useState([]);
   const [toast, setToast] = useState({

@@ -1,6 +1,12 @@
 # build stage
 FROM node:20-alpine AS build
 WORKDIR /app
+ARG VITE_API_BASE_URL=
+ARG VITE_API_KEY=read-dev-key
+ARG VITE_API_KEY_WRITE=
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+ENV VITE_API_KEY=${VITE_API_KEY}
+ENV VITE_API_KEY_WRITE=${VITE_API_KEY_WRITE}
 COPY package*.json ./
 # Prefer reproducible installs; fall back if lockfile missing
 RUN npm ci || npm install
